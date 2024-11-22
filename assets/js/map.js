@@ -1,5 +1,6 @@
 $(document).ready(function () {
   var result_geojson;
+  var clipping_boundary;
 
   window.onbeforeunload = function () {
     return "Are you sure you want to leave? Think of your existing exports!";
@@ -165,6 +166,9 @@ $(document).ready(function () {
     }
     if (map.hasLayer(resultVectorGrid)) {
       resultVectorGrid.remove();
+    }
+    if (map.hasLayer(clipping_boundary)) {
+      clipping_boundary.remove();
     }
   }
 
@@ -384,8 +388,16 @@ $(document).ready(function () {
   }
 
   function fit_bounds_geojson(geojson) {
-    var clippingBoundary = L.geoJson(geojson);
-    var bounds = clippingBoundary.getBounds();
+    clipping_boundary = L.geoJson(geojson, {
+      style: {
+        fillOpacity: 0,
+        weight: 2,
+        color: "#d6403f",
+        interactive: false,
+      },
+    });
+    clipping_boundary.addTo(map);
+    var bounds = clipping_boundary.getBounds();
     var centroid = bounds.getCenter();
     var desiredZoomLevel = 18;
     map.setView(centroid, desiredZoomLevel);
